@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./custom.css";
+import "./custom.css"; // Assume custom.css includes additional styles if needed
 import {
   Container,
   Row,
@@ -9,6 +9,8 @@ import {
   Form,
   Button,
   ListGroup,
+  Badge,
+  Spinner,
 } from "react-bootstrap";
 
 // Quote API URL
@@ -16,7 +18,7 @@ const QUOTE_API_URL = "https://api.quotable.io/random";
 
 function Dashboard() {
   return (
-    <Container>
+    <Container className="py-4">
       {/* First Row: Quote Card */}
       <Row className={"mb-4"}>
         <Col xs={12}>
@@ -49,6 +51,7 @@ function Dashboard() {
 
 function WithHeaderAndQuoteExample() {
   const [quote, setQuote] = useState({ content: "", author: "" });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchQuote = async () => {
@@ -58,6 +61,8 @@ function WithHeaderAndQuoteExample() {
         setQuote({ content: data.content, author: data.author });
       } catch (error) {
         console.error("Error fetching quote:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -65,12 +70,18 @@ function WithHeaderAndQuoteExample() {
   }, []);
 
   return (
-    <Card>
-      <Card.Body>
-        <blockquote className="blockquote text-center mb-0">
-          <p>{quote.content}</p>
-          <footer className="blockquote-footer">{quote.author}</footer>
-        </blockquote>
+    <Card className="shadow-lg rounded border-0 hover-card">
+      <Card.Body className="p-4">
+        {loading ? (
+          <div className="text-center">
+            <Spinner animation="border" />
+          </div>
+        ) : (
+          <blockquote className="blockquote text-center mb-0">
+            <p className="mb-3">{quote.content}</p>
+            <footer className="blockquote-footer">{quote.author}</footer>
+          </blockquote>
+        )}
       </Card.Body>
     </Card>
   );
@@ -103,16 +114,9 @@ function TaskListWidget() {
   };
 
   return (
-    <Card
-      className="mb-4"
-      style={{
-        width: "100%",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-        border: "none",
-      }}
-    >
-      <Card.Header className={"background-dashboard"}>
-        <h6 className={"bg-text"}>Task List</h6>
+    <Card className="mb-4 shadow-lg rounded border-0 hover-card">
+      <Card.Header className="background-dashboard">
+        <h6 className="bg-text">Task List <Badge bg="info">{tasks.length} / 3</Badge></h6>
       </Card.Header>
       <Card.Body>
         <Form>
@@ -138,7 +142,7 @@ function TaskListWidget() {
               <ListGroup.Item
                 key={index}
                 variant={task.completed ? "success" : "light"}
-                className="d-flex justify-content-between align-items-center"
+                className="d-flex justify-content-between align-items-center list-group-item-action"
               >
                 <span
                   onClick={() => toggleTask(index)}
@@ -190,12 +194,9 @@ function CurrencyConverter() {
   }, [amount, fromCurrency, toCurrency]);
 
   return (
-    <Card
-      className="mb-4"
-      style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", border: "none" }}
-    >
-      <Card.Header className={"background-dashboard"}>
-        <h6 className={"bg-text"}>Currency Converter</h6>
+    <Card className="mb-4 shadow-lg rounded border-0 hover-card">
+      <Card.Header className="background-dashboard">
+        <h6 className="bg-text">Currency Converter</h6>
       </Card.Header>
       <Card.Body>
         <Form>
@@ -230,7 +231,7 @@ function CurrencyConverter() {
               </Form.Select>
             </div>
           </Form.Group>
-          <div style={{ textAlign: "center", fontWeight: "bolder" }}>
+          <div className="text-center font-weight-bold">
             {convertedAmount !== null &&
               `Converted Amount: ${convertedAmount} ${toCurrency}`}
           </div>
@@ -256,18 +257,19 @@ function DigitalClock() {
   const minuteDegrees = (minutes * 6).toFixed(1);
   const secondDegrees = (seconds * 6).toFixed(1);
 
+  // Function to generate dots around the clock face
   const generateDots = () => {
     const dots = [];
-    const radius = 75;
-    const centerX = 80;
-    const centerY = 80;
+    const radius = 75; // Radius of the dots circle
+    const centerX = 80; // Center X of the clock
+    const centerY = 80; // Center Y of the clock
 
     for (let i = 0; i < 60; i++) {
-      const angle = i * 6;
-      const radian = (angle - 90) * (Math.PI / 180);
-      const size = i % 5 === 0 ? 4 : 2;
-      const x = Math.cos(radian) * radius + centerX;
-      const y = Math.sin(radian) * radius + centerY;
+      const angle = i * 6; // 6 degrees for each dot
+      const radian = (angle - 90) * (Math.PI / 180); // Convert to radians and shift by 90 degrees
+      const size = i % 5 === 0 ? 4 : 2; // Larger dots for hour marks
+      const x = Math.cos(radian) * radius + centerX; // Calculate X position
+      const y = Math.sin(radian) * radius + centerY; // Calculate Y position
       const dotStyle = {
         position: "absolute",
         width: `${size}px`,
@@ -288,6 +290,7 @@ function DigitalClock() {
     justifyContent: "space-around",
     alignItems: "center",
     padding: "20px",
+    transition: "all 0.3s ease-in-out", // Add transition effect
   };
 
   const outerBorderStyle = {
@@ -349,17 +352,16 @@ function DigitalClock() {
   };
 
   return (
-    <Card
-      className="mb-4"
-      style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", border: "none" }}
-    >
-      <Card.Header className={"background-dashboard"}>
-        <h6 className={"bg-text"}>Clock</h6>
+    <Card className="mb-4 shadow-lg rounded border-0 hover-card">
+      <Card.Header className="background-dashboard">
+        <h6 className="bg-text">Clock</h6>
       </Card.Header>
       <Card.Body>
         <div style={clockContainerStyle}>
           <div style={outerBorderStyle}>
+            {/* Render the dots around the clock face */}
             {generateDots()}
+            {/* Clock hands */}
             <div style={hourHandStyle}></div>
             <div style={minuteHandStyle}></div>
             <div style={secondHandStyle}></div>
@@ -375,11 +377,21 @@ function DigitalClock() {
 }
 
 function CalendarWidget() {
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [selectedDate, setSelectedDate] = useState(today);
+
+  // Check if a given day is today
+  const isToday = (day) => {
+    return (
+      day.getDate() === today.getDate() &&
+      day.getMonth() === today.getMonth() &&
+      day.getFullYear() === today.getFullYear()
+    );
+  };
 
   const generateCalendar = () => {
-    const today = new Date();
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
     const startingDayOfWeek = firstDayOfMonth.getDay();
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -390,24 +402,34 @@ function CalendarWidget() {
     for (let i = 0; i < totalCells; i++) {
       const dayNumber = i - startingDayOfWeek + 1;
       const isCurrentMonth = dayNumber > 0 && dayNumber <= daysInMonth;
-      const isCurrentDate =
+      const thisDay = new Date(currentYear, currentMonth, dayNumber);
+      const isSelectedDate =
         isCurrentMonth &&
-        dayNumber === today.getDate() &&
-        currentMonth === today.getMonth() &&
-        currentYear === today.getFullYear();
+        selectedDate &&
+        selectedDate.getDate() === dayNumber &&
+        selectedDate.getMonth() === currentMonth &&
+        selectedDate.getFullYear() === currentYear;
+      
+      const isCurrentDayToday = isCurrentMonth && isToday(thisDay);
 
       calendarDays.push(
         <div
           key={i}
           className={`p-2 text-center ${
             isCurrentMonth ? "" : "text-muted"
-          } ${isCurrentDate ? "bg-primary text-white" : ""}`}
+          } ${isSelectedDate ? "bg-primary text-white rounded-circle" : ""} ${
+            isCurrentDayToday ? "shadow border border-dark rounded-circle" : ""
+          }`}
           style={{
             flexBasis: "calc(100% / 7)",
             maxWidth: "calc(100% / 7)",
             height: "40px",
             lineHeight: "40px",
+            cursor: isCurrentMonth ? "pointer" : "default",
           }}
+          onClick={() =>
+            isCurrentMonth && setSelectedDate(thisDay)
+          }
         >
           {isCurrentMonth ? dayNumber : ""}
         </div>
@@ -436,16 +458,9 @@ function CalendarWidget() {
   };
 
   return (
-    <Card
-      className="mb-4"
-      style={{
-        width: "100%",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-        border: "none",
-      }}
-    >
-      <Card.Header className={"background-dashboard"}>
-        <h6 className={"bg-text"}>Calendar</h6>
+    <Card className="mb-4 shadow-lg rounded border-0 hover-card">
+      <Card.Header className="background-dashboard">
+        <h6 className="bg-text">Calendar</h6>
       </Card.Header>
       <Card.Body>
         <div className="d-flex justify-content-between align-items-center mb-2">
@@ -488,5 +503,6 @@ function CalendarWidget() {
     </Card>
   );
 }
+
 
 export default Dashboard;
