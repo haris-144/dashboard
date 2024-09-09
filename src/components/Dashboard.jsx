@@ -382,15 +382,6 @@ function CalendarWidget() {
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [selectedDate, setSelectedDate] = useState(today);
 
-  // Check if a given day is today
-  const isToday = (day) => {
-    return (
-      day.getDate() === today.getDate() &&
-      day.getMonth() === today.getMonth() &&
-      day.getFullYear() === today.getFullYear()
-    );
-  };
-
   const generateCalendar = () => {
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
     const startingDayOfWeek = firstDayOfMonth.getDay();
@@ -402,33 +393,29 @@ function CalendarWidget() {
     for (let i = 0; i < totalCells; i++) {
       const dayNumber = i - startingDayOfWeek + 1;
       const isCurrentMonth = dayNumber > 0 && dayNumber <= daysInMonth;
-      const thisDay = new Date(currentYear, currentMonth, dayNumber);
       const isSelectedDate =
         isCurrentMonth &&
         selectedDate &&
         selectedDate.getDate() === dayNumber &&
         selectedDate.getMonth() === currentMonth &&
         selectedDate.getFullYear() === currentYear;
-      
-      const isCurrentDayToday = isCurrentMonth && isToday(thisDay);
 
       calendarDays.push(
         <div
           key={i}
           className={`p-2 text-center ${
             isCurrentMonth ? "" : "text-muted"
-          } ${isSelectedDate ? "bg-primary text-white rounded-circle" : ""} ${
-            isCurrentDayToday ? "shadow border border-dark rounded-circle" : ""
-          }`}
+          } ${isSelectedDate ? "bg-primary text-white rounded-circle" : ""}`}
           style={{
             flexBasis: "calc(100% / 7)",
             maxWidth: "calc(100% / 7)",
             height: "40px",
             lineHeight: "40px",
             cursor: isCurrentMonth ? "pointer" : "default",
+            borderRadius: isSelectedDate ? "50%" : "0",
           }}
           onClick={() =>
-            isCurrentMonth && setSelectedDate(thisDay)
+            isCurrentMonth && setSelectedDate(new Date(currentYear, currentMonth, dayNumber))
           }
         >
           {isCurrentMonth ? dayNumber : ""}
@@ -446,6 +433,7 @@ function CalendarWidget() {
     } else {
       setCurrentMonth(currentMonth - 1);
     }
+    setSelectedDate(null); // Clear selected date when month changes
   };
 
   const handleNextMonth = () => {
@@ -455,6 +443,7 @@ function CalendarWidget() {
     } else {
       setCurrentMonth(currentMonth + 1);
     }
+    setSelectedDate(null); // Clear selected date when month changes
   };
 
   return (
@@ -503,6 +492,5 @@ function CalendarWidget() {
     </Card>
   );
 }
-
 
 export default Dashboard;
